@@ -69,3 +69,96 @@ git push -u origin master
 
 mkdir -p helm/week3-app envs/dev envs/prod
 ```
+
+- Install utilities
+
+```bash
+sudo apt update && sudo apt -y upgrade
+sudo apt -y install ca-certificates curl gnupg lsb-release git unzip jq
+```
+
+- Install Docker
+
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo $VERSION_CODENAME) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update
+sudo apt -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo usermod -aG docker $USER
+newgrp docker
+docker version
+```
+
+- Run Jenkins in Docker + persistent storage
+
+```bash
+sudo mkdir -p /srv/jenkins_home # Create folders
+sudo chown -R 1000:1000 /srv/jenkins_home
+```
+
+- Run Jenkins:
+
+```bash
+docker run -d --name jenkins \
+  -p 8080:8080 -p 50000:50000 \
+  -v /srv/jenkins_home:/var/jenkins_home \
+  --restart unless-stopped \
+  jenkins/jenkins:lts
+```
+
+- Get initial admin password:
+
+```bash
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+- Open Jenkins from host:
+http://<vm-hostonly-ip>:8080
+
+
+- Install plugins (minimum):
+Pipeline
+Git
+Credentials Binding
+Docker Pipeline
+Blue Ocean (optional)
+GitHub integration (optional)
+
+- Install CI tools on VM1 (AWS + K8s CLIs + scanners)
+
+```bash
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+unzip awscliv2.zip
+sudo ./aws/install
+aws --version
+```
+
+- Install KubeCtl
+
+```bash
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+kubectl version --client
+```
+
+- Install Helm
+
+```bash
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+helm version
+```
+
+- Install Trivy (image scan)
+
+```bash
+sudo apt -y install wget
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo gpg --dearmor -o /etc/apt/keyrings/trivy.gpg
+echo "deb [signed-by=/etc/apt/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
+sudo apt update && sudo apt -y install trivy
+trivy -v
+```
