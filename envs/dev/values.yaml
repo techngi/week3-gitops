@@ -1,4 +1,5 @@
 replicaCount: 1
 image:
-  repository: sanaqvi573/week3-app
-  tag: "1.0.0"
+  repository: 421869852482.dkr.ecr.ap-southeast-2.amazonaws.com/week3-app
+  tag: "latest"
+  pullPolicy: IfNotPresent
