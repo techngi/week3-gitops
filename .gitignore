@@ -1,0 +1,4 @@
+.aws/
+.kube/
+*.zip
+kubectl
