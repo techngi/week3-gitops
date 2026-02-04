@@ -173,8 +173,9 @@ sudo mv /tmp/eksctl /usr/local/bin
 eksctl version
 ```
 
-# Create and configure AWS credentials
-- Create an IAM user for your lab
+- Create and configure AWS credentials
+* Create AWS IAM user
+** Configure the user
 
 ```bash
 aws configure
@@ -182,9 +183,9 @@ aws configure
 aws sts get-caller-identity
 ```
 
-# Create AWS Cluster
+- Create AWS Cluster
 
-- Create YAML file to setup cluster in AWS
+* Create YAML file to setup cluster in AWS
 
 ```bash
 cat > cluster-public.yaml <<'YAML'
@@ -217,7 +218,6 @@ YAML
 ```
 
 ```bash
-
 eksctl create cluster -f cluster-public.yaml
 
 aws eks describe-cluster --name devops-hybrid --region ap-southeast-2
