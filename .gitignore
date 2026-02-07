@@ -2,3 +2,7 @@
 .kube/
 *.zip
 kubectl
+
+# local AWS files
+aws/
+.aws/
